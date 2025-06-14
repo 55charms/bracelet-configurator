@@ -10,6 +10,7 @@
 <body>
   <h1>Bracelet Configurator</h1>
 
+
   <label for="braceletSize">Choose Bracelet Size:</label>
   <select id="braceletSize">
     <option value="13">Small - 13 Charms</option>
@@ -18,10 +19,12 @@
     <option value="20">X-Large - 20 Charms</option>
   </select>
 
+
   <h2>Bracelet Preview</h2>
   <div id="braceletPreviewContainer">
     <div id="braceletPreview"></div>
   </div>
+
 
   <h2>Charms</h2>
   <div class="charm-group">
@@ -30,12 +33,24 @@
       <div class="charm" draggable="true" data-name="Plain" data-price="0.00">Plain</div>
     </div>
 
-    <h3>Type B</h3>
-    <div id="typeB" class="charm-group-list">
-      <div class="charm" draggable="true" data-name="Crab" data-price="3.79"><img src="crab.png" alt="Crab" /> Crab</div>
-      <div class="charm" draggable="true" data-name="Flower" data-price="3.79"><img src="flower.png" alt="Flower" /> Flower</div>
-      <div class="charm" draggable="true" data-name="Clown" data-price="3.79"><img src="clown.png" alt="Clown" /> Clown</div>
-    </div>
+
+<h3>Type B</h3>
+<div id="typeB" class="charm-group-list">
+  <div class="charm" draggable="true" data-name="Crab" data-price="3.79">
+    <img src="images/A1.png" alt="Crab" class="charm-img" />
+    <span>Crab</span>
+  </div>
+  <div class="charm" draggable="true" data-name="Flower" data-price="3.79">
+    <img src="images/A6.png" alt="Flower" class="charm-img" />
+    <span>Flower</span>
+  </div>
+  <div class="charm" draggable="true" data-name="Clown" data-price="3.79">
+    <img src="images/A20.png" alt="Clown" class="charm-img" />
+    <span>Clown</span>
+  </div>
+</div>
+
+
 
     <h3>Type C (Custom)</h3>
     <div id="typeC" class="charm-group-list"></div>
@@ -46,6 +61,7 @@
     </div>
   </div>
 
+
   <h2>Selected Charms</h2>
   <table>
     <thead>
@@ -55,8 +71,10 @@
   </table>
   <p>Total: $<span id="totalPrice">0.00</span></p>
 
+
   <h2>Charm Order</h2>
   <div id="charmOrder"></div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
@@ -70,14 +88,17 @@
     const cropButton = document.getElementById("cropButton");
     const typeC = document.getElementById("typeC");
 
+
     let cropper;
     let customImagesMap = new Map();
     let customCharmCounter = 1;
     let charmOrderList = [];
 
+
     function resetCharmCounts() {
       charmCounts = {};
     }
+
 
     function updateBracelet(size) {
       braceletPreview.innerHTML = "";
@@ -95,10 +116,12 @@
       updateCharmOrder();
     }
 
+
     function updateSelectedCharms() {
       selectedCharms.innerHTML = "";
       let total = 0;
       const counted = {};
+
 
       charmOrderList.forEach(name => {
         const baseName = name.startsWith("Custom Charm") ? "Custom Charm" : name;
@@ -106,6 +129,7 @@
           counted[baseName] = (counted[baseName] || 0) + 1;
         }
       });
+
 
       for (const name in counted) {
         const price = name === 'Custom Charm' ? 3.79 : getCharmPrice(name);
@@ -117,16 +141,20 @@
       document.getElementById("totalPrice").textContent = total.toFixed(2);
     }
 
+
     function updateCharmOrder() {
       charmOrder.innerHTML = charmOrderList.map(name => name || "empty").join(", ");
     }
+
 
     function handleDrop(e) {
       const charmName = e.dataTransfer.getData("text/plain");
       const imgSrc = e.dataTransfer.getData("img-src") || null;
       const index = e.currentTarget.dataset.index;
 
+
       let displayName = charmName;
+
 
       if (charmName === "Custom Charm") {
         if (customImagesMap.has(imgSrc)) {
@@ -137,11 +165,13 @@
         }
       }
 
+
       charmOrderList[index] = displayName;
       e.currentTarget.innerHTML = imgSrc ? `<img src="${imgSrc}" alt="${displayName}">` : displayName;
       updateCharmOrder();
       updateSelectedCharms();
     }
+
 
     document.querySelectorAll('.charm').forEach(charm => {
       charm.addEventListener('dragstart', e => {
@@ -151,7 +181,9 @@
       });
     });
 
+
     braceletSize.addEventListener("change", e => updateBracelet(+e.target.value));
+
 
     imageUpload.addEventListener("change", e => {
       const file = e.target.files[0];
@@ -167,9 +199,11 @@
       }
     });
 
+
     cropButton.addEventListener("click", () => {
       const canvas = cropper.getCroppedCanvas({ width: 60, height: 60 });
       const imgURL = canvas.toDataURL();
+
 
       const charm = document.createElement("div");
       charm.className = "charm";
@@ -178,21 +212,25 @@
       charm.dataset.price = "3.79";
       charm.innerHTML = `<img src="${imgURL}" alt="Custom Charm" /> Custom`;
 
+
       charm.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', charm.dataset.name);
         e.dataTransfer.setData('img-src', imgURL);
       });
+
 
       typeC.appendChild(charm);
       cropContainer.style.display = 'none';
       imageUpload.value = "";
     });
 
+
     function getCharmPrice(name) {
       if (name === 'Custom Charm') return 3.79;
       const charm = document.querySelector(`.charm[data-name='${name}']`);
       return charm ? parseFloat(charm.dataset.price) : 0;
     }
+
 
     updateBracelet(+braceletSize.value);
   </script>
